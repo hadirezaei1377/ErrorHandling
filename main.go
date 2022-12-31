@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // Error handling strategies
@@ -33,3 +34,22 @@ func error_propagation() (*http.Response, error) {
 	}
 	return resp, nil
 }
+
+// strategy 2, retry on error
+func retry_on_error() (resp *http.Response, err error) {
+
+	deadline := time.Now().Add(time.Second * 15)
+
+	// for says about 15 seconds you must do works(make http get)    	for tries := 1; time.Now().Before(deadline); tries++ {
+		resp, err = http.Get("ftp://anyhost.com")
+		if err != nil {
+			// exponential back-off
+			time.Sleep(time.Second << uint(tries))
+			continue
+		}
+
+		return resp, nil
+	}
+
+	// deadline is finished 
+	return nil, fmt.Errorf("failed to call the API: %v", err)
