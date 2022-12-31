@@ -53,3 +53,14 @@ func retry_on_error() (resp *http.Response, err error) {
 
 	// deadline is finished 
 	return nil, fmt.Errorf("failed to call the API: %v", err)
+
+	// strategy 3, log and exit
+	func log_and_exit() *http.Response {
+		resp, err := http.Get("ftp://anyhost.com")
+		if err != nil {
+			log.Fatalf("failed to call the API %v. exit", err)
+		}
+	
+		return resp
+	}
+	
